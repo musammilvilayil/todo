@@ -87,3 +87,11 @@ function localPlan(){
   }
   return out.sort((a,b)=>mins(a.time)-mins(b.time));
 }
+
+// Load StudyForge 3.3 live-day UI/runtime only after the base scheduler exists.
+(function loadLiveDay(){
+  const css=document.createElement('link');
+  css.rel='stylesheet';css.href='./live-day-v33.css';document.head.appendChild(css);
+  const script=document.createElement('script');
+  script.src='./live-day-v33.js';script.defer=false;document.body.appendChild(script);
+})();
