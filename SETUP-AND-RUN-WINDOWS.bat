@@ -1,11 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title StudyForge - Clean Setup
+title StudyForge 2.3 - Battery Care Setup
 echo.
-echo ================================================
-echo   STUDYFORGE CLEAN BUILD - SF-GH-20260901
-echo ================================================
+echo =====================================================
+echo   STUDYFORGE 2.3 - BATTERY CARE - SF-GH-20260901-BAT
+echo =====================================================
 echo.
 where node >nul 2>nul
 if errorlevel 1 (
@@ -20,8 +20,12 @@ echo.
 if exist node_modules rmdir /s /q node_modules
 if exist package-lock.json del /q package-lock.json
 if exist .expo rmdir /s /q .expo
-echo Installing minimal Expo SDK 54 dependencies...
+echo Installing Expo SDK 54 + Battery Care dependencies...
 call npm install --no-audit --no-fund
+if errorlevel 1 goto :fail
+echo.
+echo Verifying battery module...
+call npm ls expo-battery
 if errorlevel 1 goto :fail
 echo.
 echo Starting Expo Tunnel mode...
