@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "StudyForge",
+    "slug": "studyforge",
+    "version": "2.2.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.studyforge.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "StudyForge uses your location to calculate today’s prayer times."
+      }
+    },
+    "android": {
+      "package": "com.studyforge.app",
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow StudyForge to use your location to calculate today’s prayer times."
+        }
+      ]
+    ]
+  }
+}
