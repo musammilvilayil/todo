@@ -1,5 +1,5 @@
-StudyForge SF-GH-20260901
-Expo 54.0.34
-React 19.1.0
-React Native 0.81.5
-Tunnel mode default
+StudyForge 2.3.0
+Build: SF-GH-20260901-BAT
+Expo SDK 54 / React Native 0.81.5
+Battery Care: expo-battery ~10.0.8
+Default connection: Expo Tunnel
