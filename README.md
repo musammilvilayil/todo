@@ -5,7 +5,21 @@ Native Expo study planner for MERN + Digital Marketing with schedule-aware iPhon
 **Version:** `2.3.0`  
 **Build:** `SF-GH-20260901-BAT`
 
-## Easiest Windows Command Prompt run
+## Fresh install from ANY Windows Command Prompt
+
+Run these commands **one by one**:
+
+```bat
+cd /d "%USERPROFILE%\Downloads"
+if exist StudyForge rmdir /s /q StudyForge
+git clone https://github.com/musammilvilayil/todo.git StudyForge
+cd /d "%USERPROFILE%\Downloads\StudyForge"
+call RUN-EVERYTHING-CMD.bat
+```
+
+Do not combine the `if exist` line with `&&`; when the folder does not exist, CMD can stop the rest of that chain.
+
+## Easiest run after the repo is already downloaded
 
 Open Command Prompt inside the repo folder and run:
 
