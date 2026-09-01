@@ -1,0 +1,38 @@
+name: Validate StudyForge PWA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'pwa/**'
+      - 'netlify/**'
+      - 'netlify.toml'
+      - '.github/workflows/validate-pwa.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-pwa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check browser JavaScript syntax
+        run: node --check pwa/app.js
+
+      - name: Validate Netlify AI function bundle
+        run: npx -y esbuild netlify/functions/plan.mts --bundle --platform=node --format=esm --outfile=/tmp/studyforge-plan.mjs
+
+      - name: Verify required PWA files
+        run: |
+          test -f pwa/index.html
+          test -f pwa/styles.css
+          test -f pwa/app.js
+          test -f pwa/sw.js
+          test -f pwa/manifest.webmanifest
