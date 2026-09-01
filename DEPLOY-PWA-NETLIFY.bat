@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
 title StudyForge AI PWA - Netlify Deploy
 
@@ -39,9 +39,13 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/3] Linking StudyForge site...
-call npx -y netlify-cli@latest link --id d1747533-ba7c-428b-a920-658319c6a272
-if errorlevel 1 goto :fail
+echo [2/3] Checking StudyForge site link...
+if exist ".netlify\state.json" (
+  echo Project already linked locally. Skipping relink.
+) else (
+  call npx -y netlify-cli@latest link --id d1747533-ba7c-428b-a920-658319c6a272
+  if errorlevel 1 goto :fail
+)
 
 echo.
 echo [3/3] Deploying PWA + AI function to production...
@@ -57,8 +61,8 @@ echo   https://studyforge-pwa.netlify.app
 
 echo   Then: Share -^> Add to Home Screen
 
-echo   For Gemini AI, run SET-GEMINI-KEY.bat once.
 echo ========================================================
+echo.
 pause
 exit /b 0
 
@@ -67,7 +71,9 @@ echo.
 echo ========================================================
 echo   DEPLOY STOPPED WITH AN ERROR
 
-echo   Keep this window open and send the error above.
+echo   Keep this window open and send only the error above.
+echo   Never send your Gemini API key.
 echo ========================================================
+echo.
 pause
 exit /b 1
