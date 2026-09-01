@@ -42,15 +42,8 @@ call npx -y netlify-cli@latest env:set GEMINI_API_KEY "%GEMINI_API_KEY%" --conte
 if errorlevel 1 goto :fail
 set "GEMINI_API_KEY="
 
-echo Setting model: gemini-3.7-flash
-call npx -y netlify-cli@latest env:set GEMINI_MODEL "gemini-3.7-flash" --context production >nul 2>nul
-if errorlevel 1 goto :fail
-
 echo.
-echo Verifying configuration metadata...
-call npx -y netlify-cli@latest env:list --context production >nul 2>nul
-if errorlevel 1 goto :fail
-
+echo Gemini model is already configured by StudyForge.
 echo.
 echo ========================================================
 echo   GEMINI CONFIGURED SECURELY
