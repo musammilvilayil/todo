@@ -23,10 +23,18 @@ if errorlevel 1 (
   goto :fail
 )
 
+where npm >nul 2>nul
+if errorlevel 1 (
+  echo ERROR: npm was not found.
+  echo Reinstall Node.js, reopen Command Prompt, then run this again.
+  goto :fail
+)
+
 echo Node version:
 node -v
 echo npm version:
-npm -v
+call npm -v
+if errorlevel 1 goto :fail
 echo.
 
 echo [1/4] Installing/updating project dependencies...
@@ -48,7 +56,7 @@ if exist .studyforge-ios-check rmdir /s /q .studyforge-ios-check
 echo.
 echo ========================================================
 echo   ALL CHECKS PASSED - STARTING STUDYFORGE
-
+echo.
 echo   If Expo asks to install @expo/ngrok, type Y and Enter.
 echo   Then scan the NEW QR code with Expo Go on the iPhone.
 echo ========================================================
@@ -63,7 +71,7 @@ goto :end
 echo.
 echo ========================================================
 echo   STUDYFORGE STOPPED WITH AN ERROR
-
+echo.
 echo   Do not close this window yet.
 echo   Send the error lines above to ChatGPT.
 echo ========================================================
