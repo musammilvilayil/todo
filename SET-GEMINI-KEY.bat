@@ -6,10 +6,9 @@ title StudyForge - Configure Gemini Securely
 echo.
 echo ========================================================
 echo   STUDYFORGE 3.0 - CONFIGURE GEMINI SECURELY
-
 echo ========================================================
 echo.
-echo The key is stored only in Netlify as a secret for production functions.
+echo The key is stored only in Netlify as a production secret.
 echo It is NOT written into this repo or the public PWA bundle.
 echo Do NOT paste the key into ChatGPT, screenshots, logs, or messages.
 echo.
@@ -38,21 +37,24 @@ for /f "usebackq delims=" %%K in (`powershell -NoProfile -Command "$s=Read-Host 
 if not defined GEMINI_API_KEY goto :fail
 
 echo.
-echo Saving key as a Netlify secret...
-call npx -y netlify-cli@latest env:set GEMINI_API_KEY "%GEMINI_API_KEY%" --scope functions --context production --secret >nul 2>nul
+echo Saving key as a Netlify production secret...
+call npx -y netlify-cli@latest env:set GEMINI_API_KEY "%GEMINI_API_KEY%" --context production --secret >nul 2>nul
 if errorlevel 1 goto :fail
 set "GEMINI_API_KEY="
 
 echo Setting model: gemini-3.7-flash
-call npx -y netlify-cli@latest env:set GEMINI_MODEL "gemini-3.7-flash" --scope functions --context production >nul 2>nul
+call npx -y netlify-cli@latest env:set GEMINI_MODEL "gemini-3.7-flash" --context production >nul 2>nul
+if errorlevel 1 goto :fail
+
+echo.
+echo Verifying configuration metadata...
+call npx -y netlify-cli@latest env:list --context production >nul 2>nul
 if errorlevel 1 goto :fail
 
 echo.
 echo ========================================================
 echo   GEMINI CONFIGURED SECURELY
-
 echo   Next: call DEPLOY-PWA-NETLIFY.bat
-
 echo ========================================================
 echo.
 pause
@@ -63,7 +65,7 @@ set "GEMINI_API_KEY="
 echo.
 echo ========================================================
 echo   GEMINI SETUP STOPPED WITH AN ERROR
-
+echo   Run this file again after: git pull
 echo   Send only the error text. Never send your API key.
 echo ========================================================
 echo.
