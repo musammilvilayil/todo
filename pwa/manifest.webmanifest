@@ -1,7 +1,7 @@
 {
-  "name": "StudyForge",
+  "name": "StudyForge AI Planner",
   "short_name": "StudyForge",
-  "description": "Offline-first MERN + Digital Marketing study planner with Battery Care.",
+  "description": "Offline-first customizable AI-assisted task and skill-development planner.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
