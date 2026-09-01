@@ -13,7 +13,7 @@ echo   1. Check Node.js
 echo   2. Install/update dependencies
 echo   3. Run Expo Doctor
 echo   4. Test the iOS JavaScript bundle
-echo   5. Start Expo Go in Tunnel mode
+echo   5. Start Expo Go (Tunnel first, LAN fallback)
 echo.
 
 where node >nul 2>nul
@@ -56,13 +56,20 @@ if exist .studyforge-ios-check rmdir /s /q .studyforge-ios-check
 echo.
 echo ========================================================
 echo   ALL CHECKS PASSED - STARTING STUDYFORGE
-echo.
-echo   If Expo asks to install @expo/ngrok, type Y and Enter.
-echo   Then scan the NEW QR code with Expo Go on the iPhone.
 echo ========================================================
 echo.
-
+echo Trying Tunnel mode first...
+echo If Expo asks to install @expo/ngrok, type Y and Enter.
+echo.
 call npx expo start --tunnel -c
+if not errorlevel 1 goto :end
+
+echo.
+echo Tunnel could not connect. Falling back to LAN mode...
+echo Make sure iPhone and PC are on the SAME Wi-Fi.
+echo If Windows Firewall asks, allow Node.js on Private networks.
+echo.
+call npx expo start --lan -c
 if errorlevel 1 goto :fail
 
 goto :end
