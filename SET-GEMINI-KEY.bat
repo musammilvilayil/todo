@@ -1,7 +1,7 @@
 @echo off
-setlocal
+setlocal EnableExtensions DisableDelayedExpansion
 cd /d "%~dp0"
-title StudyForge - Configure Gemini
+title StudyForge - Configure Gemini Securely
 
 echo.
 echo ========================================================
@@ -9,13 +9,16 @@ echo   STUDYFORGE 3.0 - CONFIGURE GEMINI SECURELY
 
 echo ========================================================
 echo.
-echo Your Gemini API key will be stored in Netlify environment variables.
-echo It will NOT be written into this repo or the public PWA files.
+echo The key is stored only in Netlify as a secret for production functions.
+echo It is NOT written into this repo or the public PWA bundle.
+echo Do NOT paste the key into ChatGPT, screenshots, logs, or messages.
 echo.
 
 where node >nul 2>nul
 if errorlevel 1 goto :fail
 where npx >nul 2>nul
+if errorlevel 1 goto :fail
+where powershell >nul 2>nul
 if errorlevel 1 goto :fail
 
 call npx -y netlify-cli@latest status >nul 2>nul
@@ -25,35 +28,44 @@ if errorlevel 1 (
   if errorlevel 1 goto :fail
 )
 
-call npx -y netlify-cli@latest link --id d1747533-ba7c-428b-a920-658319c6a272
+call npx -y netlify-cli@latest link --id d1747533-ba7c-428b-a920-658319c6a272 >nul
 if errorlevel 1 goto :fail
 
 echo.
-set /p GEMINI_API_KEY=Paste your Gemini API key here and press Enter: 
-if "%GEMINI_API_KEY%"=="" goto :fail
+echo Paste your NEW Gemini API key below.
+echo For privacy, nothing will appear while you type or paste.
+for /f "usebackq delims=" %%K in (`powershell -NoProfile -Command "$s=Read-Host 'Gemini API key' -AsSecureString; $b=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($s); try {[Runtime.InteropServices.Marshal]::PtrToStringBSTR($b)} finally {[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b)}"`) do set "GEMINI_API_KEY=%%K"
+if not defined GEMINI_API_KEY goto :fail
 
-call npx -y netlify-cli@latest env:set GEMINI_API_KEY "%GEMINI_API_KEY%"
+echo.
+echo Saving key as a Netlify secret...
+call npx -y netlify-cli@latest env:set GEMINI_API_KEY "%GEMINI_API_KEY%" --scope functions --context production --secret >nul 2>nul
 if errorlevel 1 goto :fail
 set "GEMINI_API_KEY="
 
-echo.
-echo Setting default model: gemini-3.7-flash
-call npx -y netlify-cli@latest env:set GEMINI_MODEL "gemini-3.7-flash"
+echo Setting model: gemini-3.7-flash
+call npx -y netlify-cli@latest env:set GEMINI_MODEL "gemini-3.7-flash" --scope functions --context production >nul 2>nul
 if errorlevel 1 goto :fail
 
 echo.
 echo ========================================================
-echo   GEMINI CONFIGURED
+echo   GEMINI CONFIGURED SECURELY
 
-echo   Now run: DEPLOY-PWA-NETLIFY.bat
+echo   Next: call DEPLOY-PWA-NETLIFY.bat
 
 echo ========================================================
+echo.
 pause
 exit /b 0
 
 :fail
 set "GEMINI_API_KEY="
 echo.
-echo Gemini setup stopped. Keep this window open and send the error above.
+echo ========================================================
+echo   GEMINI SETUP STOPPED WITH AN ERROR
+
+echo   Send only the error text. Never send your API key.
+echo ========================================================
+echo.
 pause
 exit /b 1
