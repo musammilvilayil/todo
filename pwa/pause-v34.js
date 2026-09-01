@@ -131,3 +131,9 @@ function progressView(){
 }
 
 render();
+
+// Load the optional Personal OS layer last so it can extend/override the stable core.
+(function(){
+  if(!document.querySelector('link[data-sf40]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./personal-os-v40.css';l.dataset.sf40='1';document.head.appendChild(l)}
+  if(!document.querySelector('script[data-sf40]')){const s=document.createElement('script');s.src='./personal-os-v40.js';s.dataset.sf40='1';document.body.appendChild(s)}
+})();
