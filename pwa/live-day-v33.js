@@ -69,6 +69,7 @@ function sf33Place(slots,cursor,duration){
 function sf33ProjectedPlan(anchorOverride=null){
   const plan=todayPlan().map(x=>({...x}));
   const L=sf33LiveState();
+  if(anchorOverride==null&&!L.activeId)return plan;
   const active=plan.find(x=>x.id===L.activeId)||null;
   const anchor=anchorOverride==null?sf33AnchorForActive(active):anchorOverride;
   let slots=sf33Subtract(sf33Windows(),sf33FixedBlocks(plan,L.activeId));
