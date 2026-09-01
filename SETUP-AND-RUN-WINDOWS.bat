@@ -28,17 +28,29 @@ echo Verifying battery module...
 call npm ls expo-battery
 if errorlevel 1 goto :fail
 echo.
-echo Starting Expo Tunnel mode...
+echo Trying Expo Tunnel mode first...
 echo If asked to install @expo/ngrok, type Y and press Enter.
 call npx expo start --tunnel -c
+if not errorlevel 1 goto :end
+
+echo.
+echo Tunnel could not connect. Falling back to LAN mode...
+echo Make sure iPhone and PC are on the SAME Wi-Fi.
+echo If Windows Firewall asks, allow Node.js on Private networks.
+echo.
+call npx expo start --lan -c
 if errorlevel 1 goto :fail
 goto :end
+
 :fail
 echo.
 echo STUDYFORGE STOPPED WITH AN ERROR
 echo The window will stay open. Send the lines above to ChatGPT.
 pause
 exit /b 1
+
 :end
+echo.
+echo Expo stopped normally.
 pause
 endlocal
