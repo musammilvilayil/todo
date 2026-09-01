@@ -35,8 +35,6 @@ function sf33AnchorForActive(active){
   if(!active||!L.startedAt)return sf33NowMinute();
   const elapsed=sf34ActiveElapsedMs()/60000;
   const remaining=Math.max(0,(Number(active.duration)||S.profile.sessionMinutes)-elapsed);
-  // While paused, remaining focus stays constant but the real clock keeps moving,
-  // so flexible tasks continue shifting forward around protected blocks.
   return Math.min(1439,Math.round(sf33NowMinute()+remaining));
 }
 function sf33StartTask(id){
@@ -79,12 +77,7 @@ function sf33CompleteActive(){
   const pauseMinutes=Math.max(0,Math.round(pauseMs/60000));
   const delayMinutes=Math.round(sf33StampMinute(L.startedAt)-mins(task.time));
   L.actuals=L.actuals||{};
-  L.actuals[id]={
-    startedAt:L.startedAt,completedAt,
-    actualMinutes,wallMinutes,pauseMinutes,
-    plannedMinutes:Number(task.duration)||S.profile.sessionMinutes,
-    delayMinutes
-  };
+  L.actuals[id]={startedAt:L.startedAt,completedAt,actualMinutes,wallMinutes,pauseMinutes,plannedMinutes:Number(task.duration)||S.profile.sessionMinutes,delayMinutes};
   S.checks[keyFor()]=S.checks[keyFor()]||{};
   S.checks[keyFor()][id]=true;
   const bank=S.tasks.find(t=>!t.done&&(t.id===id||t.title===task.title));if(bank)bank.done=true;
@@ -106,7 +99,6 @@ function taskRow(x){
   else if(x._deferred)note='No safe slot left today — moved to next active day after completion';
   else if(late)note=`${late}m late · start when ready and StudyForge will reflow the rest`;
   else if(moved)note=`Projected ${pretty(display)} · originally ${pretty(x.time)}`;
-
   let action='';
   if(passive)action=`<span class="passive-mark">${x.type==='break'?'↻':'•'}</span>`;
   else if(done)action='<button class="check on">✓</button>';
@@ -114,7 +106,6 @@ function taskRow(x){
   else if(active)action='<button class="mini-action pause" onclick="sf34PauseTask()">Pause</button><button class="move-action" onclick="sf33CompleteActive()">Done</button>';
   else if(x._deferred)action='<span class="passive-mark">→</span>';
   else action=`<button class="mini-action" onclick="sf33StartTask('${x.id}')">Start</button><button class="move-action" onclick="sf33MoveTask('${x.id}')">Move</button>`;
-
   return `<div class="timeline ${done?'done':''} ${active?'live-active':''} ${paused?'live-paused':''} ${x.locked?'locked':''}"><div class="time"><span data-projected-id="${esc(x.id)}">${x._deferred?'Next':pretty(display)}</span><div class="note">${x._deferred?'active day':`${x.duration||S.profile.sessionMinutes}m`}</div></div><div class="emoji">${x.emoji||'🎯'}</div><div><div class="task-meta">${esc(x.skill||'General')} · ${paused?'paused':esc(x.type||'task')}</div><div class="t-title">${esc(x.title)}</div><div class="note">${esc(note)}</div>${active?'<div class="live-mini" data-live-elapsed>'+sf33ElapsedLabel()+'</div>':''}</div><div class="task-actions">${action}</div></div>`;
 }
 function sf33ActiveCard(){
@@ -129,11 +120,13 @@ function progressView(){
   const actual=actuals.reduce((n,a)=>n+(Number(a.actualMinutes)||0),0),planned=actuals.reduce((n,a)=>n+(Number(a.plannedMinutes)||0),0),paused=actuals.reduce((n,a)=>n+(Number(a.pauseMinutes)||0),0),delay=actuals.length?Math.round(actuals.reduce((n,a)=>n+(Number(a.delayMinutes)||0),0)/actuals.length):0;
   return `<div class="eyebrow">PROGRESS</div><div class="title">Real execution</div><div class="grid2"><div class="metric"><span class="note">Tasks done</span><b>${done}/${work.length}</b></div><div class="metric"><span class="note">Actual focus</span><b>${actual}m</b></div><div class="metric"><span class="note">Paused</span><b>${paused}m</b></div><div class="metric"><span class="note">Avg start shift</span><b>${delay>0?'+':''}${delay}m</b></div></div><div class="card" style="margin-top:11px"><b>Planned vs actual</b><div class="note">Completed work: ${planned}m planned · ${actual}m active focus. Pause time is tracked separately and still pushes later flexible tasks forward.</div></div>`;
 }
-
 render();
 
-// Load the optional Personal OS layer last so it can extend/override the stable core.
+// Load Personal OS, then Off Day v4.1, in a deterministic order.
 (function(){
-  if(!document.querySelector('link[data-sf40]')){const l=document.createElement('link');l.rel='stylesheet';l.href='./personal-os-v40.css';l.dataset.sf40='1';document.head.appendChild(l)}
-  if(!document.querySelector('script[data-sf40]')){const s=document.createElement('script');s.src='./personal-os-v40.js';s.dataset.sf40='1';document.body.appendChild(s)}
+  const addCss=(href,key)=>{if(document.querySelector(`link[data-${key}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.setAttribute(`data-${key}`,'1');document.head.appendChild(l)};
+  const loadScript=(src,key)=>new Promise((resolve,reject)=>{const existing=document.querySelector(`script[data-${key}]`);if(existing){if(existing.dataset.loaded==='1')resolve();else existing.addEventListener('load',resolve,{once:true});return}const s=document.createElement('script');s.src=src;s.setAttribute(`data-${key}`,'1');s.onload=()=>{s.dataset.loaded='1';resolve()};s.onerror=reject;document.body.appendChild(s)});
+  addCss('./personal-os-v40.css','sf40');
+  addCss('./offday-v41.css','sf41');
+  loadScript('./personal-os-v40.js','sf40').then(()=>loadScript('./offday-v41.js','sf41')).catch(()=>toast('Advanced planner modules could not load'));
 })();
