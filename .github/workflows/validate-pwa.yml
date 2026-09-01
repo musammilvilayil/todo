@@ -27,6 +27,7 @@ jobs:
         run: |
           node --check pwa/app.js
           node --check pwa/scheduler-v32.js
+          node --check pwa/live-day-v33.js
 
       - name: Validate Netlify AI function bundle
         run: npx -y esbuild netlify/functions/plan.mts --bundle --platform=node --format=esm --outfile=/tmp/studyforge-plan.mjs
@@ -37,5 +38,7 @@ jobs:
           test -f pwa/styles.css
           test -f pwa/app.js
           test -f pwa/scheduler-v32.js
+          test -f pwa/live-day-v33.js
+          test -f pwa/live-day-v33.css
           test -f pwa/sw.js
           test -f pwa/manifest.webmanifest
