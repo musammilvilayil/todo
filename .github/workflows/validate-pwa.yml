@@ -24,7 +24,9 @@ jobs:
           node-version: 22
 
       - name: Check browser JavaScript syntax
-        run: node --check pwa/app.js
+        run: |
+          node --check pwa/app.js
+          node --check pwa/scheduler-v32.js
 
       - name: Validate Netlify AI function bundle
         run: npx -y esbuild netlify/functions/plan.mts --bundle --platform=node --format=esm --outfile=/tmp/studyforge-plan.mjs
@@ -34,5 +36,6 @@ jobs:
           test -f pwa/index.html
           test -f pwa/styles.css
           test -f pwa/app.js
+          test -f pwa/scheduler-v32.js
           test -f pwa/sw.js
           test -f pwa/manifest.webmanifest
