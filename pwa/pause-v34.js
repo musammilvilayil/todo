@@ -122,11 +122,14 @@ function progressView(){
 }
 render();
 
-// Load Personal OS, then Off Day v4.1, in a deterministic order.
+// Load Personal OS, then Off Day v4.1, then the one-tap Home control.
 (function(){
   const addCss=(href,key)=>{if(document.querySelector(`link[data-${key}]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.setAttribute(`data-${key}`,'1');document.head.appendChild(l)};
   const loadScript=(src,key)=>new Promise((resolve,reject)=>{const existing=document.querySelector(`script[data-${key}]`);if(existing){if(existing.dataset.loaded==='1')resolve();else existing.addEventListener('load',resolve,{once:true});return}const s=document.createElement('script');s.src=src;s.setAttribute(`data-${key}`,'1');s.onload=()=>{s.dataset.loaded='1';resolve()};s.onerror=reject;document.body.appendChild(s)});
   addCss('./personal-os-v40.css','sf40');
   addCss('./offday-v41.css','sf41');
-  loadScript('./personal-os-v40.js','sf40').then(()=>loadScript('./offday-v41.js','sf41')).catch(()=>toast('Advanced planner modules could not load'));
+  loadScript('./personal-os-v40.js','sf40')
+    .then(()=>loadScript('./offday-v41.js','sf41'))
+    .then(()=>loadScript('./home-offday-v42.js','sf42'))
+    .catch(()=>toast('Advanced planner modules could not load'));
 })();
